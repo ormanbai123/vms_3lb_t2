@@ -2,10 +2,11 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
 from .models import CustomUser, Driver
-from .forms import loginForm, addDriverForm
+from .forms import loginForm, addDriverForm, addMaintenanceOrFuelingPersonForm
 
 # Create your views here.
 
@@ -41,6 +42,7 @@ def userLogin(request):
         form = loginForm()
     return render(request, 'registration/login.html', {'form' : form})
 
+@login_required(login_url="/login/")
 def addDriver(request):
     form = None
     if request.method == 'POST':
@@ -81,15 +83,46 @@ def addDriver(request):
         form = addDriverForm()
     return render(request, 'admin_templates/add_driver_page.html', {'form':form})
 
-def add_Task():
+def addTask():
     pass
+@login_required(login_url="/login/")
+def addMaintenanceOrFuelingPerson(request):
+    form = None
+    if request.method == 'POST':
+        form = addMaintenanceOrFuelingPersonForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            email = form.cleaned_data['email']
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
+            user_type = form.cleaned_data['user_type']
 
-def add_MaintenancePerson():
-    pass
-
-def add_FuelingPerson():
-    pass
-
+            if CustomUser.objects.filter(username=username).exists():
+                # User already exists
+                messages.error(request, 'User with this username already exists')
+            elif CustomUser.objects.filter(email=email).exists():
+                messages.error(request, 'User with this email already exists')
+            else:
+                user = CustomUser()
+                user.username = username
+                user.password = password
+                user.email = email
+                user.first_name = first_name
+                user.last_name = last_name
+                if user_type == 'Maintenance Person':
+                    user.user_type = CustomUser.MAINTENANCE_PERSON
+                else:
+                    user.user_type = CustomUser.FUELING_PERSON
+                user.save()
+                messages.success(request, 'User created successfully')
+        else:
+            print('Something went wrong')
+            messages.error(request, 'Form invalid')
+    else:
+        form = addMaintenanceOrFuelingPersonForm()
+    return render(request, 'admin_templates/add_maintenanceorfuelingperson_page.html', {'form': form})
+@login_required(login_url="/login/")
 def adminHome(request):
     return render(request, 'admin_templates/home.html', {})
 
@@ -100,7 +133,7 @@ def maintenancePersonHome(request):
     return HttpResponse('Welcome to Maintenance Person Page!')
 def fuelingPersonHome(request):
     return HttpResponse('Welcome to Fueling Person Page!')
-
+@login_required(login_url="/login/")
 def userLogout(request):
     logout(request)
     return redirect('/login/')

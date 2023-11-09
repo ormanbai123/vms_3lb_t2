@@ -49,18 +49,17 @@ class Vehicle(models.Model):
     objects = models.Manager()
 
 class Task(models.Model):
+    STATUS_CHOICES = [
+        ("posted", "Posted"),
+        ("completed", "Completed"),
+        ("in_progress", "In progress"),
+        ("declined", "Declined"),
+    ]
     id = models.AutoField(primary_key=True)
     description = models.TextField()
     pointA = models.TextField() # from
     pointB = models.TextField() # to
-    objects = models.Manager()
-
-class Route(models.Model):
-    id = models.AutoField(primary_key=True)
-    date_taken = models.DateField()
-    status = models.TextField()
-    pointA = models.TextField()
-    pointB = models.TextField()
+    status = models.TextField(choices=STATUS_CHOICES, default="posted")
     objects = models.Manager()
 
 class DriverVehicle(models.Model):
