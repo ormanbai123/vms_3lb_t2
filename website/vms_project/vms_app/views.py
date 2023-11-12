@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 
 from django.contrib.auth import authenticate, login, logout
@@ -124,7 +124,8 @@ def addMaintenanceOrFuelingPerson(request):
     return render(request, 'admin_templates/add_maintenanceorfuelingperson_page.html', {'form': form})
 @login_required(login_url="/login/")
 def adminHome(request):
-    return render(request, 'admin_templates/home.html', {})
+    return render(request, 'admin_templates/home.html',
+                  {'user':request.user})
 
 def driverHome(request):
     return HttpResponse('Welcome to Driver Page!')
@@ -137,4 +138,13 @@ def fuelingPersonHome(request):
 def userLogout(request):
     logout(request)
     return redirect('/login/')
+@login_required(login_url="/login/")
+def accountView(request, username):
+    try:
+        user = CustomUser.objects.get(username=username)
+    except:
+        raise Http404('Account does not exist')
 
+
+    context = {'user' : user}
+    return render(request, 'account_page.html', context=context)
