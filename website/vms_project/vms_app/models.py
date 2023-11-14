@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+
+from django.utils import timezone
+
 # Create your models here.
 
 class CustomUser(AbstractUser):
@@ -60,6 +63,7 @@ class Task(models.Model):
     pointA = models.TextField() # from
     pointB = models.TextField() # to
     status = models.TextField(choices=STATUS_CHOICES, default="posted")
+    dateTaken = models.DateTimeField(default=timezone.now)
     objects = models.Manager()
 
 class DriverVehicle(models.Model):

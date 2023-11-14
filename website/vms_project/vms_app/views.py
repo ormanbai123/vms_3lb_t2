@@ -141,7 +141,10 @@ def userLogout(request):
 @login_required(login_url="/login/")
 def accountView(request, username):
     try:
-        user = CustomUser.objects.get(username=username)
+        if request.user.username == username:
+            user = CustomUser.objects.get(username=username)
+        else:
+            raise Http404('Unauthorized access')
     except:
         raise Http404('Account does not exist')
 

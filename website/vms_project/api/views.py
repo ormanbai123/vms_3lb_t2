@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework import status
@@ -29,3 +30,4 @@ def driverLogin(request):
 
 def driverLogout(request):
     logout(request)
+    return HttpResponse("Logged out!");
