@@ -18,7 +18,7 @@ var userInfo = {
 
 
 function HomeScreen({ navigation }) {
-
+  
   const [currentLatitude, setCurrentLatitude] = useState(51.090108);
   const [currentLongitude, setCurrentLongitude] = useState(71.399909);
   const latitudeDelta =  0.005;
