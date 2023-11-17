@@ -19,8 +19,8 @@ var userInfo = {
 
 function HomeScreen({ navigation }) {
 
-  const [currentLatitude, setCurrentLatitude] = useState(0);
-  const [currentLongitude, setCurrentLongitude] = useState(0);
+  const [currentLatitude, setCurrentLatitude] = useState(51.090108);
+  const [currentLongitude, setCurrentLongitude] = useState(71.399909);
   const latitudeDelta =  0.005;
   const longitudeDelta =  0.005;
 
@@ -87,14 +87,19 @@ function Logout({ navigation }) {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Button title="Log out" onPress={
-        async ()=>{
-          const serverURL = "http://10.0.2.2:8000/api/logout/";
-          try{
-            const response = await fetch(serverURL);
-            navigation.navigate('LoginScreen');
-          } catch(error){
-            console.error(error);
-          }
+        //-----Production code---------------
+        // async ()=>{
+        //   const serverURL = "http://10.0.2.2:8000/api/logout/";
+        //   try{
+        //     const response = await fetch(serverURL);
+        //     navigation.navigate('LoginScreen');
+        //   } catch(error){
+        //     console.error(error);
+        //   }
+        // }
+        //-------------------------------------
+        ()=>{
+          navigation.navigate('LoginScreen');
         }
       }>
       </Button>
@@ -141,41 +146,40 @@ const LoginScreen = ({ navigation }) => {
     // add slashes ('/') at the end of URL!
     const serverURL = "http://10.0.2.2:8000/api/login/";
 
-    try{
-      //-------------------Production---------------------------------
-      const response = await fetch(serverURL, {
-        method: 'POST',
-        headers: {
-        "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          'username': username,
-          'password': password,
-        }),
-      });
-      const responseMsg = await response.json();
-      if (responseMsg.status === "success") {
-        console.log(responseMsg.data.first_name);
-        userInfo.email = responseMsg.data.email;
-        userInfo.first_name = responseMsg.data.first_name;
-        userInfo.last_name = responseMsg.data.last_name;
-        navigation.navigate("Body");
-      } else {
-        console.error("API post request fail!");
-      }
-      //--------------------------------------------
 
-      // When testing
-      //navigation.navigate("Body");
-      //
-
-
-    }catch (error){
-      console.error(error);
-    }
+    //-------------------Production---------------------------------
+    // try{
+    //   const response = await fetch(serverURL, {
+    //     method: 'POST',
+    //     headers: {
+    //     "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({
+    //       'username': username,
+    //       'password': password,
+    //     }),
+    //   });
+    //   const responseMsg = await response.json();
+    //   if (responseMsg.status === "success") {
+    //     userInfo.username = username;
+    //     userInfo.password = password;
+    //     userInfo.email = responseMsg.data.email;
+    //     userInfo.first_name = responseMsg.data.first_name;
+    //     userInfo.last_name = responseMsg.data.last_name;
+    //     navigation.navigate("Body");
+    //   } else {
+    //     console.error("API post request fail!");
+    //   }
+      
+    // }catch (error){
+    //   console.error(error);
+    // }
+    //-------------------------------------------------------------------
 
 
-      //navigation.navigate("Body")
+      //--------------When testing-------------------------
+      navigation.navigate("Body")
+      //--------------------------------------
     };
 
   return (

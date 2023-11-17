@@ -31,10 +31,10 @@
 </head>
 <body class="text-center" >
 <form method="post" class="form-signin">
-  <h2>Log In</h2>
+  <h2>Log in</h2>
   {% csrf_token %}
   {{ form.as_p }}
-  <button type="submit">Log In</button>
+  <button type="submit">Log in</button>
 
   {% if messages %}
   <ul class = "messages">

@@ -10,6 +10,17 @@ from .forms import loginForm, addDriverForm, addMaintenanceOrFuelingPersonForm
 
 # Create your views here.
 
+@login_required(login_url="/login/")
+def genericHome(request):
+    if request.user.user_type == CustomUser.MY_ADMIN:
+        return redirect('/admin_home/')
+    elif request.user.user_type == CustomUser.FUELING_PERSON:
+        return redirect('/fueling_person_home')
+    elif request.user.user_type == CustomUser.MAINTENANCE_PERSON:
+        return redirect('/maintenance_person_home')
+    else:
+        return redirect('/driver_home')
+
 def index(request):
     #TODO implement index page
     return redirect('login/')
@@ -25,14 +36,7 @@ def userLogin(request):
             user = CustomUser.objects.filter(username=username, password=password).last()
             if user:
                 login(request, user)
-                if user.user_type == CustomUser.DRIVER:
-                    return redirect('/driver_home/')
-                elif user.user_type == CustomUser.FUELING_PERSON:
-                    return redirect('/fueling_person_home/')
-                elif user.user_type == CustomUser.MAINTENANCE_PERSON:
-                    return redirect('/maintenance_person_home/')
-                elif user.user_type == CustomUser.MY_ADMIN:
-                    return redirect('/admin_home/')
+                return genericHome(request)
             else:
                 print('Error occurred in logging!!')
                 messages.error(request, 'Invalid username or password! Please try again.')
