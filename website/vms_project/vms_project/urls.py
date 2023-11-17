@@ -21,5 +21,6 @@ from django.urls import include
 
 urlpatterns = [
     path('', include('vms_app.urls')),
+    path('api/', include('api.urls')),
     path('admin/', admin.site.urls),
 ]
