@@ -58,15 +58,18 @@ function HomeScreen({ navigation }) {
          //onRegionChange={regionChange} 
          >
         </MapView>
+
+        <View
+          style={{
+              position: 'absolute',//use absolute position to show button on top of the map
+              bottom: '1%', //for center align
+              //left: '50%',
+              right: '50%',
+          }}>
+          <Button title='End route' />
+        </View>
+
     </View>
-    // <MapView
-    //   style={{ flex: 1 }}
-    //   initialRegion={{
-    //     latitude: 37.78825,
-    //     longitude: -122.4324,
-    //     latitudeDelta: 0.0922,
-    //     longitudeDelta: 0.0421,
-    //   }}/>
   );
 }
 
@@ -128,7 +131,7 @@ const Drawer = createDrawerNavigator();
 function Body() {
   return (
       <Drawer.Navigator initialRouteName="Home">
-        <Drawer.Screen name="Home" component={HomeScreen} />
+        <Drawer.Screen name="Home" component={HomeScreen} options={{headerTransparent:true}} />
         <Drawer.Screen name="Tasks" component={Tasks} />
         <Drawer.Screen name="History" component={History} />
         <Drawer.Screen name="Logout" component={Logout} />

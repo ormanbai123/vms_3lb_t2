@@ -50,6 +50,9 @@
   z-index: 1;
 }
   </style>
+  {% block includes %}
+
+  {% endblock %}
 </head>
 <body>
 
@@ -73,7 +76,7 @@
         <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Dropdown
-        </a>
+        <span class="caret"></span> </a>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
             {% block mydropdown %}
           	<li><a href="#"><span class="glyphicon glyphicon-user"></span>    Profile</a></li>
@@ -127,6 +130,10 @@ window.onclick = function(event) {
   }
 }
 </script>
+
+{% block myscripts %}
+
+{% endblock %}
 
 </body>
 </html>

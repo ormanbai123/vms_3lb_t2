@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 
+
+
+{% block includes %}
+
+{% endblock %}
+
 {% block mydropdown %}
 <li><a href="/account/{{user.username}}"><span class="glyphicon glyphicon-user"></span>    Profile</a></li>
 <li role="separator" class="divider"></li>
@@ -8,7 +14,7 @@
 
 {% block sidenav %}
 <p><a href="/add_driver">Add Driver</a></p>
-<p><a href="#">Add Task</a></p>
+<p><a href="/add_task">Add Task</a></p>
 <p><a href="/add_maintenanceorfuelingperson">Add Fueling/Maintenance Person</a></p>
 {% endblock %}
 
@@ -18,4 +24,9 @@
 <hr>
 <h3>Test</h3>
 <p>Lorem ipsum...</p>
+{% endblock %}
+
+
+{% block myscripts %}
+
 {% endblock %}

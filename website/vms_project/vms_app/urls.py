@@ -16,6 +16,7 @@ urlpatterns = [
     path("add_driver/", views.addDriver, name='vms-add-driver'),
     path("add_maintenanceorfuelingperson/", views.addMaintenanceOrFuelingPerson,
          name='vms-add-maintenanceorfuelingperson'),
+    path("add_task/", views.addTask, name='vms-add-task'),
 
     path("add_task/", views.addTask, name='vms-add-task'),
 
