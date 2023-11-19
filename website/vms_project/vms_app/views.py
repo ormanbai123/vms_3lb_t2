@@ -5,8 +5,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-from .models import CustomUser, Driver
-from .forms import loginForm, addDriverForm, addMaintenanceOrFuelingPersonForm
+from .models import CustomUser, Driver, Task, DriverTask
+from .forms import loginForm, addDriverForm, addMaintenanceOrFuelingPersonForm, addTaskForm
+
 
 # Create your views here.
 
@@ -87,8 +88,28 @@ def addDriver(request):
         form = addDriverForm()
     return render(request, 'admin_templates/add_driver_page.html', {'form':form})
 
-def addTask():
-    pass
+@login_required(login_url="/login/")
+def addTask(request):
+    # TODO
+    #  Finish this
+
+    form = None
+    if request.method == 'POST':
+        form = addTaskForm(request.POST)
+        if form.is_valid():
+            driver_username = form.cleaned_data['driver_username']
+            point_a = form.cleaned_data['point_a']
+            point_b = form.cleaned_data['point_b']
+            if CustomUser.objects.filter(username=driver_username, user_type=CustomUser.DRIVER).exists():
+                pass
+                # Task.objects.create()
+                # DriverTask.objects.create()
+            else:
+                messages.error(request,'Driver with this username does not exist!')
+    else:
+        form = addTaskForm()
+    return render(request, 'admin_templates/add_task_page.html', context={'form':form})
+
 @login_required(login_url="/login/")
 def addMaintenanceOrFuelingPerson(request):
     form = None

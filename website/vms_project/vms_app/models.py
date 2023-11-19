@@ -59,7 +59,6 @@ class Task(models.Model):
         ("declined", "Declined"),
     ]
     id = models.AutoField(primary_key=True)
-    description = models.TextField()
     pointA = models.TextField() # from
     pointB = models.TextField() # to
     status = models.TextField(choices=STATUS_CHOICES, default="posted")

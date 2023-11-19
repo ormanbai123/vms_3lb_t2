@@ -12,35 +12,35 @@
 
 
 {% block mainbody %}
-<div class="container account-container">
   <h2 class="text-center mb-4">{{user.first_name}} {{user.last_name}}</h2>
 
   <!-- Account Information -->
-  <div class="mb-3">
-    <label for="username" class="form-label">First Name:</label>
-    <input type="text" id="first_name" class="form-control" value={{user.first_name}} readonly>
+  <form>
+    <div class="form-group">
+    <label for="my_firstname">First name</label>
+    <input type="text" class="form-control" id="my_firstname"
+           value = {{user.first_name}} readonly>
+    </div>
+    <div class="form-group">
+    <label for="my_lastname">Last name</label>
+    <input type="text" class="form-control" id="my_lastname"
+           value = {{user.last_name}} readonly>
   </div>
-
-  <div class="mb-3">
-    <label for="email" class="form-label">Last Name:</label>
-    <input type="email" id="last_name" class="form-control" value={{user.last_name}} readonly>
+    <div class="form-group">
+    <label for="my_username">Username</label>
+    <input type="text" class="form-control" id="my_username"
+           value = {{user.username}} readonly>
   </div>
-
-  <div class="mb-3">
-    <label for="username" class="form-label">Username:</label>
-    <input type="text" id="username" class="form-control" value={{user.username}} readonly>
+  <div class="form-group">
+    <label for="my_email">Email address</label>
+    <input type="email" class="form-control" id="my_email"
+           value = {{user.email}} readonly>
   </div>
-
-  <div class="mb-3">
-    <label for="email" class="form-label">Email address:</label>
-    <input type="email" id="email" class="form-control" value={{user.email}} readonly>
+  <div class="form-group">
+    <label for="my_password">Password</label>
+    <input type="password" class="form-control" id="my_password"
+           value = {{user.password}} readonly>
   </div>
+</form>
 
-  <div class="mb-3">
-    <label for="email" class="form-label">Password:</label>
-    <input type="email" id="password" class="form-control" value={{user.password}} readonly>
-  </div>
-
-
-</div>
 {% endblock %}
