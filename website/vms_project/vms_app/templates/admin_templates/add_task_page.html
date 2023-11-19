@@ -1,0 +1,127 @@
+{% extends "admin_templates/home.html" %}
+
+{% block includes %}
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBvAYRE_P_EDKwm6bx92F0mKh49LYfr2X0
+  &libraries=places"></script>
+  <style>
+    #map {
+      height: 400px;
+      width: 50%;
+    }
+  </style>
+{% endblock %}
+
+{% block mainbody %}
+<h1>Assign Task</h1>
+
+<label for="source">Source:</label>
+  <input type="text" id="source" placeholder="Enter source location">
+  <br>
+  <label for="destination">Destination:</label>
+  <input type="text" id="destination" placeholder="Enter destination location">
+  <br>
+<div id="map"></div>
+<br>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Assign Task</button>
+
+  {% if messages %}
+  <ul class = "messages">
+    {% for message in messages %}
+      <li> {{message}} </li>
+    {% endfor %}
+  </ul>
+  {% endif%}
+</form>
+{% endblock %}
+
+
+{% block myscripts %}
+  <script>
+    var map;
+    var directionsService;
+    var directionsRenderer;
+    var sourceAutocomplete;
+    var destinationAutocomplete;
+
+    function initMap() {
+      map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 14,
+        center: {lat: 51.090108, lng: 71.399909}, // Default center (Nazarbayev University)
+        disableDefaultUI: true,
+      });
+
+      directionsService = new google.maps.DirectionsService();
+      directionsRenderer = new google.maps.DirectionsRenderer();
+      directionsRenderer.setMap(map);
+
+      // Set up autocomplete for source and destination
+      sourceAutocomplete = new google.maps.places.Autocomplete(document.getElementById('source'));
+      destinationAutocomplete = new google.maps.places.Autocomplete(document.getElementById('destination'));
+
+      sourceAutocomplete.addListener('place_changed', updateSourceLocation);
+      destinationAutocomplete.addListener('place_changed', updateDestinationLocation);
+    }
+
+    function submitButton(){
+      var source = sourceAutocomplete.getPlace();
+      var dest = destinationAutocomplete.getPlace();
+      if (source !== undefined && dest !== undefined){
+        console.log(source.geometry.location.toString());
+        console.log(dest.geometry.location.toString());
+
+        var point_a = source.name + "|" + source.geometry.location.toString();
+        var point_b = dest.name + "|" + dest.geometry.location.toString();
+        //window.alert(point_a);
+
+        document.getElementById('id_point_a').value = point_a;
+        document.getElementById('id_point_b').value = point_b;
+      }else{
+        window.alert("Something went wrong!");
+      }
+    }
+
+    function updateSourceLocation() {
+      var source = document.getElementById('source').value;
+      var destination = document.getElementById('destination').value;
+      if (source !== "" && destination !== ""){
+        calculateRoute();
+      }
+    }
+
+    function updateDestinationLocation() {
+      var source = document.getElementById('source').value;
+      var destination = document.getElementById('destination').value;
+      if (source !== "" && destination !== ""){
+        calculateRoute();
+      }
+    }
+
+    function calculateRoute() {
+      var source = document.getElementById('source').value;
+      var destination = document.getElementById('destination').value;
+
+      var request = {
+        origin: source,
+        destination: destination,
+        travelMode: 'DRIVING'
+      };
+
+      directionsService.route(request, function(response, status) {
+        if (status === 'OK') {
+          directionsRenderer.setDirections(response);
+        } else {
+          window.alert('Directions request failed due to ' + status);
+        }
+      });
+    }
+  </script>
+
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBvAYRE_P_EDKwm6bx92F0mKh49LYfr2X0
+    &libraries=places&callback=initMap">
+  </script>
+{% endblock %}
