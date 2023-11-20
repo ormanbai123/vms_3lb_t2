@@ -11,7 +11,7 @@ class loginForm(forms.Form):
 class addDriverForm(forms.Form):
     username = forms.CharField(label='Username', max_length=65, widget=forms.TextInput(attrs={"class":"form-control"}))
     password = forms.CharField(label='Password', max_length=65, widget=forms.PasswordInput(attrs={"class":"form-control"}))
-    email = forms.EmailField(label='Email', max_length=65, widget=forms.TextInput(attrs={"class":"form-control"}))
+    email = forms.EmailField(label='Email', max_length=65, widget=forms.EmailInput(attrs={"class":"form-control"}))
     first_name = forms.CharField(label='First name', max_length=65, widget=forms.TextInput(attrs={"class":"form-control"}))
     last_name = forms.CharField(label='Last name', max_length=65, widget=forms.TextInput(attrs={"class":"form-control"}))
 
@@ -32,9 +32,9 @@ class addMaintenanceOrFuelingPersonForm(forms.Form):
         ("1", "Maintenance Person"),
         ("2", "Fueling Person"),
     )
-    user_type = forms.ChoiceField(choices=lChoices)
-    username = forms.CharField(label='Username', max_length=65)
-    password = forms.CharField(label='Password', max_length=65, widget=forms.PasswordInput)
-    email = forms.EmailField(label='Email', max_length=65)
-    first_name = forms.CharField(label='First name', max_length=65)
-    last_name = forms.CharField(label='Last name', max_length=65)
+    user_type = forms.ChoiceField(choices=lChoices, widget=forms.Select(attrs={"class":"form-control"}))
+    username = forms.CharField(label='Username', max_length=65, widget=forms.TextInput(attrs={"class":"form-control"}))
+    password = forms.CharField(label='Password', max_length=65, widget=forms.PasswordInput(attrs={"class":"form-control"}))
+    email = forms.EmailField(label='Email', max_length=65, widget=forms.EmailInput(attrs={"class":"form-control"}))
+    first_name = forms.CharField(label='First name', max_length=65, widget=forms.TextInput(attrs={"class":"form-control"}))
+    last_name = forms.CharField(label='Last name', max_length=65, widget=forms.TextInput(attrs={"class":"form-control"}))

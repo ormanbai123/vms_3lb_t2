@@ -100,10 +100,11 @@ def addTask(request):
             driver_username = form.cleaned_data['driver_username']
             point_a = form.cleaned_data['point_a']
             point_b = form.cleaned_data['point_b']
-            if CustomUser.objects.filter(username=driver_username, user_type=CustomUser.DRIVER).exists():
-                pass
-                # Task.objects.create()
-                # DriverTask.objects.create()
+            driver = CustomUser.objects.get(username=driver_username, user_type=CustomUser.DRIVER)
+            if driver:
+                task = Task.objects.create(pointA=point_a, pointB=point_b)
+                DriverTask.objects.create(driver_id=driver.id, task_id=task.id)
+                messages.success(request, 'Task added successfully!')
             else:
                 messages.error(request,'Driver with this username does not exist!')
     else:

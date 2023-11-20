@@ -18,11 +18,16 @@ class CustomUserSerializer(serializers.Serializer):
         if not lUser:
             raise serializers.ValidationError("User does not exist")
 
+        lDriver = Driver.objects.get(profile=lUser)
+
         data['id'] = lUser.id
         data['email'] = lUser.email
         data['first_name'] = lUser.first_name
         data['last_name'] = lUser.last_name
         data['user_type'] = CustomUser.DRIVER
+        data['government_id'] = lDriver.government_id
+        data['driving_license_code'] = lDriver.driving_license_code
+        data['phone_number'] = lDriver.phone_number
         return data
 
     def update(self, instance, validated_data):

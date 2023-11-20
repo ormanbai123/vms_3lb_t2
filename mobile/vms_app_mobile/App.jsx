@@ -7,13 +7,17 @@ import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { useState, useEffect } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import Geolocation from '@react-native-community/geolocation';
+import { FlatList } from 'react-native-gesture-handler';
 
 var userInfo = {
   "username" : "",
   "password" : "",
   "first_name": "",
   "last_name" :"",
-  "email" :""
+  "email" :"",
+  "government_id":"",
+  "driving_license_code":"",
+  "phone_number":"",
 };
 
 
@@ -57,7 +61,10 @@ function HomeScreen({ navigation }) {
          provider={PROVIDER_GOOGLE}
          //onRegionChange={regionChange} 
          >
+          <Marker coordinate={{latitude:currentLatitude, longitude:currentLongitude}}>
+          </Marker>
         </MapView>
+        
 
         <View
           style={{
@@ -86,9 +93,48 @@ const MapStyles = StyleSheet.create({
   },
 });
 
-function Logout({ navigation }) {
+function AccountInfo({ navigation }) {
+  const [localUserInfo, setLocalUserInfo] = useState(userInfo);
+  
+  const localStyles = StyleSheet.create({
+    label: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      marginBottom: 5,
+    },
+    field: {
+      fontSize: 16,
+      marginBottom: 15,
+    },
+  });
+
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      
+      <Text style={localStyles.label}>IIN:</Text>
+      <Text style={localStyles.field}>{localUserInfo.government_id}</Text>
+
+      <Text style={localStyles.label}>Driving license code:</Text>
+      <Text style={localStyles.field}>{localUserInfo.driving_license_code}</Text>
+
+      <Text style={localStyles.label}>First name:</Text>
+      <Text style={localStyles.field}>{localUserInfo.first_name}</Text>
+
+      <Text style={localStyles.label}>Last name:</Text>
+      <Text style={localStyles.field}>{localUserInfo.last_name}</Text>
+
+      <Text style={localStyles.label}>Phone number:</Text>
+      <Text style={localStyles.field}>{localUserInfo.phone_number}</Text>
+
+      <Text style={localStyles.label}>Username:</Text>
+      <Text style={localStyles.field}>{localUserInfo.username}</Text>
+
+      <Text style={localStyles.label}>Password:</Text>
+      <Text style={localStyles.field}>{localUserInfo.password}</Text>
+
+      <Text style={localStyles.label}>Email:</Text>
+      <Text style={localStyles.field}>{localUserInfo.email}</Text>
+
       <Button title="Log out" onPress={
         //-----Production code---------------
         // async ()=>{
@@ -101,9 +147,12 @@ function Logout({ navigation }) {
         //   }
         // }
         //-------------------------------------
+
+        // Debug code---------------
         ()=>{
           navigation.navigate('LoginScreen');
         }
+        // -------------------------------
       }>
       </Button>
     </View>
@@ -113,7 +162,11 @@ function Logout({ navigation }) {
 function Tasks({ navigation }){
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-    <Text> {userInfo.username} </Text>
+    <FlatList 
+    data={}
+    renderItem={}
+    extraData={}>
+    </FlatList>
     </View>
   );
 }
@@ -127,14 +180,13 @@ function History({ navigation }){
 }
 
 const Drawer = createDrawerNavigator();
-// Change useLegacyImplementation parameter in future!
 function Body() {
   return (
       <Drawer.Navigator initialRouteName="Home">
         <Drawer.Screen name="Home" component={HomeScreen} options={{headerTransparent:true}} />
         <Drawer.Screen name="Tasks" component={Tasks} />
         <Drawer.Screen name="History" component={History} />
-        <Drawer.Screen name="Logout" component={Logout} />
+        <Drawer.Screen name="Account Info" component={AccountInfo} />
       </Drawer.Navigator>
   );
 }
@@ -169,6 +221,9 @@ const LoginScreen = ({ navigation }) => {
     //     userInfo.email = responseMsg.data.email;
     //     userInfo.first_name = responseMsg.data.first_name;
     //     userInfo.last_name = responseMsg.data.last_name;
+    //     userInfo.government_id = responseMsg.data.government_id
+    //     userInfo.driving_license_code = responseMsg.data.driving_license_code
+    //     userInfo.phone_number = responseMsg.data.phone_number
     //     navigation.navigate("Body");
     //   } else {
     //     console.error("API post request fail!");
@@ -249,7 +304,7 @@ export default function Main(){
   return(
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="LoginScreen" component={LoginScreen} />
+        <Stack.Screen name="LoginScreen" component={LoginScreen}  options={{headerShown:false}} />
         <Stack.Screen name="Body" component={Body} options={{
           headerShown: false
         }} />
