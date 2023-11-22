@@ -26,7 +26,7 @@
 <form method="post">
   {% csrf_token %}
   {{ form.as_p }}
-  <button type="submit">Assign Task</button>
+  <button type="submit" class="btn btn-primary">Assign Task</button>
 
   {% if messages %}
   <ul class = "messages">
@@ -85,19 +85,25 @@
     }
 
     function updateSourceLocation() {
-      var source = document.getElementById('source').value;
-      var destination = document.getElementById('destination').value;
-      if (source !== "" && destination !== ""){
+      var source = sourceAutocomplete.getPlace();
+      var dest = destinationAutocomplete.getPlace();
+      if (source !== undefined && dest !== undefined) {
         calculateRoute();
       }
+
+      var point_a = source.name + "|" + source.geometry.location.toString();
+      document.getElementById('id_point_a').value = point_a;
     }
 
     function updateDestinationLocation() {
-      var source = document.getElementById('source').value;
-      var destination = document.getElementById('destination').value;
-      if (source !== "" && destination !== ""){
+      var source = sourceAutocomplete.getPlace();
+      var dest = destinationAutocomplete.getPlace();
+      if (source !== undefined && dest !== undefined) {
         calculateRoute();
       }
+
+      var point_b = dest.name + "|" + dest.geometry.location.toString();
+      document.getElementById('id_point_b').value = point_b;
     }
 
     function calculateRoute() {

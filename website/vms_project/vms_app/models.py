@@ -49,13 +49,13 @@ class Vehicle(models.Model):
     model = models.TextField()
     type = models.TextField()
     mileage = models.IntegerField()
+    status = models.TextField(default="active")
     objects = models.Manager()
 
 class Task(models.Model):
     STATUS_CHOICES = [
         ("posted", "Posted"),
         ("completed", "Completed"),
-        ("in_progress", "In progress"),
         ("declined", "Declined"),
     ]
     id = models.AutoField(primary_key=True)
@@ -74,3 +74,18 @@ class DriverTask(models.Model):
     driver_id = models.ForeignKey(Driver, on_delete=models.CASCADE)
     task_id = models.ForeignKey(Task, on_delete=models.CASCADE)
     objects = models.Manager()
+
+class FuelingInfo(models.Model):
+    id = models.AutoField(primary_key=True)
+    vehicle_id = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
+    fueling_person_id = models.ForeignKey(FuelingPerson, on_delete=models.CASCADE)
+    date = models.DateTimeField(default=timezone.now)
+    gas_station_name = models.TextField()
+    fuel_amount = models.FloatField()
+    total_fuel_cost = models.FloatField()
+    # TODO think about this.
+    image_before_fueling = models.ImageField(upload_to="fueling")
+    image_after_fueling = models.ImageField(upload_to="fueling")
+    objects = models.Manager()
+
+
