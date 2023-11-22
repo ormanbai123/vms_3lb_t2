@@ -1,0 +1,19 @@
+{% extends "admin_templates/home.html" %}
+
+{% block mainbody %}
+<h1>Add Fueling Info</h1>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-primary">Add</button>
+
+  {% if messages %}
+  <ul class = "messages">
+    {% for message in messages %}
+      <li> {{message}} </li>
+    {% endfor %}
+  </ul>
+  {% endif%}
+</form>
+{% endblock %}
+

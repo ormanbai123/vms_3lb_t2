@@ -12,13 +12,13 @@ urlpatterns = [
     path("admin_home/", views.adminHome, name='vms-admin-home'),
     path("driver_home/", views.driverHome, name='vms-driver-home'),
     path("fueling_person_home/", views.fuelingPersonHome, name='vms-fueling-person-home'),
+    path("maintenance_person_home/", views.maintenancePersonHome, name='vms-maintenance-person-home'),
 
     path("add_driver/", views.addDriver, name='vms-add-driver'),
     path("add_maintenanceorfuelingperson/", views.addMaintenanceOrFuelingPerson,
          name='vms-add-maintenanceorfuelingperson'),
     path("add_task/", views.addTask, name='vms-add-task'),
-
-    path("add_task/", views.addTask, name='vms-add-task'),
+    path("add_vehicle/", views.addVehicle, name='vms-add-vehicle'),
 
     path("generic_Home/", views.genericHome, name='vms-generic-home'),
 ]
