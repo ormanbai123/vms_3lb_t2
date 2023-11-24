@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
 
-from .serializers import CustomUserSerializer, DriverSerializer
+from .serializers import CustomUserSerializer, DriverSerializer, TaskSerializer
 
 from django.views.decorators.csrf import csrf_exempt
 
@@ -30,4 +30,17 @@ def driverLogin(request):
 
 def driverLogout(request):
     logout(request)
-    return HttpResponse("Logged out!");
+    return HttpResponse("Logged out!")
+
+@api_view(['POST'])
+def finishTask(request):
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = TaskSerializer(data=data)
+        if serializer.is_valid():
+            task = serializer.validated_data['Task']
+            task.update(status=serializer.validated_data['task_status'])
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response({'status': 'fail',
+                             'data': serializer.error_messages}, status=status.HTTP_400_BAD_REQUEST)

@@ -59,18 +59,23 @@ class CustomUserSerializer(serializers.Serializer):
         pass
 
 
-class DriverSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    profile = serializers.CharField(read_only=True)
-    government_id = serializers.CharField()
-    driving_license_code = serializers.CharField()
-    phone_number = serializers.CharField()
+class TaskSerializer(serializers.Serializer):
+    task_id = serializers.CharField()
+    task_status = serializers.CharField()
 
     def create(self, validated_data):
         pass
 
+    def validate(self, data):
+        task_id = data['task_id']
+
+        task = Task.objects.get(id=task_id)
+        if task:
+            data['Task'] = task
+            return data
+        else:
+            raise serializers.ValidationError("This task does not exist")
+
+
     def update(self, instance, validated_data):
-        instance.phone_number = validated_data.get('phone_number', instance.phone_number)
-        instance.government_id = validated_data.get('government_id', instance.government_id)
-        instance.save()
-        return instance
+        pass
