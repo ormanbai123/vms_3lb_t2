@@ -22,13 +22,24 @@ var userInfo = {
 };
 
 var userTasks = [
-    { id: '1', pointA: 'Item 1', pointB: 'Item 1', date: "21" },
-    { id: '2', pointA: 'Item 2', pointB: 'Item 2', date: "20" },
-    { id: '3', pointA: 'Item 3', pointB: 'Item 3', date: "19" },
-    { id: '4', pointA: 'Item 4', pointB: 'Item 4', date: "18" },
-    { id: '5', pointA: 'Item 5', pointB: 'Item 5', date: "17" },
-    { id: '6', pointA: 'Item 6', pointB: 'Item 6', date: "16" },
+    { id: '1', sourceName: 'Item 1', destName: 'Item 1', date: "21",
+     sourceLatLng:{lat:51.090108, lng:71.399909}, destLatLng:{lat:51.094856, lng:71.395394} },
+    { id: '2', sourceName: 'Item 2', destName: 'Item 2', date: "20", 
+    sourceLatLng:{lat:51.094679, lng:71.394751}, destLatLng:{lat:51.099634, lng:71.397943} },
+    { id: '3', sourceName: 'Item 3', destName: 'Item 3', date: "19", 
+    sourceLatLng:{lat:51.090108, lng:71.399909}, destLatLng:{lat:51.094856, lng:71.395394} },
+    { id: '4', sourceName: 'Item 4', destName: 'Item 4', date: "18", 
+    sourceLatLng:{lat:51.090108, lng:71.399909}, destLatLng:{lat:51.094856, lng:71.395394} },
+    { id: '5', sourceName: 'Item 5', destName: 'Item 5', date: "17", 
+    sourceLatLng:{lat:51.090108, lng:71.399909}, destLatLng:{lat:51.094856, lng:71.395394} },
+    { id: '6', sourceName: 'Item 6', destName: 'Item 6', date: "16", 
+    sourceLatLng:{lat:51.090108, lng:71.399909}, destLatLng:{lat:51.094856, lng:71.395394} },
 ];
+
+var currentTask = { id: '', sourceName: "", destName:"", date:"" };
+
+var userCompletedTasks = [];
+
 
 const latitudeDelta =  0.005;
 const longitudeDelta =  0.005;
@@ -49,7 +60,9 @@ const MapStyles = StyleSheet.create({
 const Drawer = createDrawerNavigator();
 function Body() {
     const [driverActive, setDriverActive] = useState(false);
-    const [taskList, setTaskList] = useState(userTasks)
+    const [taskList, setTaskList] = useState(userTasks);
+    const [completedTaskList, setCompletedTaskList] = useState(userCompletedTasks);
+    const [currentDest, setCurrentDest] = useState({});
 
     function HomeScreen({ navigation }) {
         const [currentLatitude, setCurrentLatitude] = useState(51.090108);
@@ -109,13 +122,20 @@ function Body() {
                 <Marker coordinate={{latitude:currentLatitude, longitude:currentLongitude}}>
                 </Marker>
 
+                { driverActive  && 
+                <Marker coordinate={{latitude:currentDest.lat, longitude:currentDest.lng}}>
+                </Marker>
+                }
+
+                { driverActive  && 
                 <MapViewDirections
                  origin={{latitude:currentLatitude, longitude:currentLongitude}}
-                 destination={{latitude:currentLatitude+0.5, longitude:currentLongitude+0.5}}
+                 destination={{latitude:currentDest.lat, longitude:currentDest.lng}}
                  apikey='AIzaSyBvAYRE_P_EDKwm6bx92F0mKh49LYfr2X0'
-                 strokeWidth={3}
+                 strokeWidth={4}
                  strokeColor='hotpink'
                  />
+                }
 
               </MapView>
               
@@ -127,8 +147,32 @@ function Body() {
                     //left: '50%',
                     right: '50%',
                 }}>
-                  { driverActive  && <Button title='End route' onPress={()=>{
+                  { driverActive  && <Button title='End route' onPress={async ()=>{
+                    setCompletedTaskList(oldArray => [...oldArray, currentTask]);
                     setDriverActive(false);
+
+                    //------------------Production code-----------------------
+                    // var serverURL = "http://10.0.2.2:8000/api/finish_task/";
+                    // try{
+                    //     const response = await fetch(serverURL, {
+                    //       method: 'POST',
+                    //       headers: {
+                    //       "Content-Type": "application/json",
+                    //       },
+                    //       body: JSON.stringify({
+                    //         'task_id': currentTask.id,
+                    //         'task_status': "completed",
+                    //       }),
+                    //     });
+                    //     const result = await response.json();
+                    //     console.log("Success:", result);
+                        
+                    //   }catch (error){
+                    //     console.error("Error:", error);
+                    //   }
+                    //---------------------------------------------------------
+
+                    currentTask = {}; // reset current task
                   }} />}
               </View>
       
@@ -138,23 +182,45 @@ function Body() {
         
 
     function History({ navigation }){
-    return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text> {userInfo.email} </Text>
+      const renderItem = ({ item }) => (
+        <View style={{marginBottom: 16,
+          padding: 16,
+          borderWidth: 1,
+          borderColor: '#ddd',
+          borderRadius: 8,}}>
+            <Text>ID: {item.id}</Text>
+            <Text>Date: {item.date}</Text>
+            <Text>From: {item.sourceName}</Text>
+            <Text>To: {item.destName}</Text>
         </View>
-    );
+      );
+
+      return (
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <FlatList 
+                data={completedTaskList}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.id}
+          />
+          </View>
+      );
     }
 
     function Tasks({ navigation }){
-        const handleAccept = (itemId) => {
-          const updatedTaskList = taskList.filter((item) => item.id !== itemId);
+        const handleAccept = (Task) => {
+          const updatedTaskList = taskList.filter((item) => item.id !== Task.id);
           setTaskList(updatedTaskList);
           setDriverActive(true);
+          setCurrentDest(Task.destLatLng);
+          currentTask = {id : Task.id,
+                        sourceName : Task.sourceName,
+                        destName : Task.destName,
+                        date: Task.date };
           navigation.navigate('Home');
         };
         const handleReject = (itemId) => {
-          // Implement reject logic if needed
-          // For example, you can remove the rejected item from the list
+          const updatedTaskList = taskList.filter((item) => item.id !== itemId);
+          setTaskList(updatedTaskList);
         };
 
         const renderItem = ({ item }) => (
@@ -162,12 +228,12 @@ function Body() {
             marginVertical:16,
             padding:20}}>
             <Text>{"\n"}Date: {item.date}</Text>
-            <Text>From: {item.pointA}</Text>
-            <Text>To: {item.pointB}</Text>
+            <Text>From: {item.sourceName}</Text>
+            <Text>To: {item.destName}</Text>
             <View style={{flexDirection: 'row'}}>
               <Button
                 title="Accept"
-                onPress={() => handleAccept(item.id)}
+                onPress={() => handleAccept(item)}
                 disabled={driverActive === true}
                 color='green'
               />
@@ -234,7 +300,7 @@ function Body() {
             <Text style={localStyles.field}>{localUserInfo.email}</Text>
       
             <Button title="Log out" onPress={
-              //-----Production code---------------
+              //---------------------Production code--------------------
               // async ()=>{
               //   const serverURL = "http://10.0.2.2:8000/api/logout/";
               //   try{
@@ -244,7 +310,7 @@ function Body() {
               //     console.error(error);
               //   }
               // }
-              //-------------------------------------
+              //-----------------------------------------------------
       
               // Debug code---------------
               ()=>{
@@ -303,9 +369,12 @@ const LoginScreen = ({ navigation }) => {
     //     userInfo.email = responseMsg.data.email;
     //     userInfo.first_name = responseMsg.data.first_name;
     //     userInfo.last_name = responseMsg.data.last_name;
-    //     userInfo.government_id = responseMsg.data.government_id
-    //     userInfo.driving_license_code = responseMsg.data.driving_license_code
-    //     userInfo.phone_number = responseMsg.data.phone_number
+    //     userInfo.government_id = responseMsg.data.government_id;
+    //     userInfo.driving_license_code = responseMsg.data.driving_license_code;
+    //     userInfo.phone_number = responseMsg.data.phone_number;
+        
+    //     userTasks = responseMsg.data.tasks;
+
     //     navigation.navigate("Body");
     //   } else {
     //     console.error("API post request fail!");
@@ -319,7 +388,7 @@ const LoginScreen = ({ navigation }) => {
 
       //--------------When testing-------------------------
       navigation.navigate("Body")
-      //--------------------------------------
+      //---------------------------------------------------
     };
 
   return (
