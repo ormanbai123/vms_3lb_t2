@@ -56,7 +56,7 @@ class addMaintenanceOrFuelingPersonForm(forms.Form):
 class addFuelingInfoForm(forms.Form):
     license_plate = forms.CharField(label='License plate of car', max_length=30,
                                     widget=forms.TextInput(attrs={"class":"form-control"}))
-    date = forms.DateTimeField(label='Date', widget=forms.DateTimeInput(attrs={"class":"form-control"}))
+    date = forms.DateField(label='Date', widget=forms.DateInput(attrs={"class":"form-control"}))
     gas_station_name = forms.CharField(label='Gas station', max_length=65,
                                        widget=forms.TextInput(attrs={"class":"form-control"}))
     fuel_amount = forms.FloatField(label='Amount of fuel', widget=forms.NumberInput(attrs={"class":"form-control"}))

@@ -63,43 +63,10 @@ function Body() {
     const [taskList, setTaskList] = useState(userTasks);
     const [completedTaskList, setCompletedTaskList] = useState(userCompletedTasks);
     const [currentDest, setCurrentDest] = useState({});
+    const [currentSource, setCurrentSource] = useState({});
+    const mapRef = useRef();
 
     function HomeScreen({ navigation }) {
-        const [currentLatitude, setCurrentLatitude] = useState(51.090108);
-        const [currentLongitude, setCurrentLongitude] = useState(71.399909);
-        const mapRef = useRef();
-
-        useEffect(() => {
-          Geolocation.getCurrentPosition(
-            (position)=>{
-                setCurrentLatitude(position.coords.latitude);
-                setCurrentLongitude(position.coords.longitude);
-                console.log(currentLatitude, currentLongitude);
-            },
-            (error)=>{
-              console.error(error.message);
-              return;
-            },
-            { enableHighAccuracy: true, timeout: 20000, maximumAge: 10000 }
-          );
-
-          // Set up location updates
-          const watchId = Geolocation.watchPosition(
-            (position) => {
-              const { latitude, longitude } = position.coords;
-              setCurrentLatitude(latitude);
-              setCurrentLongitude(longitude);
-            },
-            (error) => console.error(error),
-            { enableHighAccuracy: true, timeout: 20000, maximumAge: 10000, distanceFilter: 10 }
-          );
-
-          return () => {
-            // Clear watch when the component unmounts
-            Geolocation.clearWatch(watchId);
-          };
-        }, []);
-
         return (
           <View style={MapStyles.container}>
               <MapView style={MapStyles.map} initialRegion={{
@@ -110,17 +77,15 @@ function Body() {
               }}
                provider={PROVIDER_GOOGLE}
                ref={mapRef}
-               region={
-                {
-                  latitude:currentLatitude,
-                  longitude:currentLongitude,
-                  longitudeDelta: longitudeDelta,
-                  latitudeDelta:latitudeDelta
-                }
-               }
+               showsUserLocation={true}
+               onUserLocationChange={location=>{mapRef.current.animateToRegion({
+                  latitude:location.nativeEvent.coordinate.latitude,
+                  longitude: location.nativeEvent.coordinate.longitude,
+                  latitudeDelta: latitudeDelta,
+                  longitudeDelta: longitudeDelta
+                  });
+                } }
                >
-                <Marker coordinate={{latitude:currentLatitude, longitude:currentLongitude}}>
-                </Marker>
 
                 { driverActive  && 
                 <Marker coordinate={{latitude:currentDest.lat, longitude:currentDest.lng}}>
@@ -128,8 +93,13 @@ function Body() {
                 }
 
                 { driverActive  && 
+                <Marker coordinate={{latitude:currentSource.lat, longitude:currentSource.lng}}>
+                </Marker>
+                }
+
+                { driverActive  && 
                 <MapViewDirections
-                 origin={{latitude:currentLatitude, longitude:currentLongitude}}
+                 origin={{latitude:currentSource.lat, longitude:currentSource.lng}}
                  destination={{latitude:currentDest.lat, longitude:currentDest.lng}}
                  apikey='AIzaSyBvAYRE_P_EDKwm6bx92F0mKh49LYfr2X0'
                  strokeWidth={4}
@@ -212,6 +182,7 @@ function Body() {
           setTaskList(updatedTaskList);
           setDriverActive(true);
           setCurrentDest(Task.destLatLng);
+          setCurrentSource(Task.sourceLatLng);
           currentTask = {id : Task.id,
                         sourceName : Task.sourceName,
                         destName : Task.destName,

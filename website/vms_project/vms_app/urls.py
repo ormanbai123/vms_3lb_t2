@@ -20,6 +20,8 @@ urlpatterns = [
     path("add_task/", views.addTask, name='vms-add-task'),
     path("add_vehicle/", views.addVehicle, name='vms-add-vehicle'),
 
+    path("add_fueling_info/", views.addFuelingInfo, name='vms-add-fueling-info'),
+
     path("generic_Home/", views.genericHome, name='vms-generic-home'),
 ]
 

@@ -262,4 +262,4 @@ def addFuelingInfo(request):
             messages.error(request, 'Form invalid')
     else:
         form = addFuelingInfoForm()
-    return render(request, 'fueling_templates/add_fueling.html', {'form': form})
+    return render(request, 'fueling_templates/add_fueling_page.html', {'form': form})
