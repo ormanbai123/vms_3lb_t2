@@ -6,10 +6,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
 from django.core.exceptions import PermissionDenied
+from django.views.generic import DeleteView
 
-from .models import CustomUser, Driver, Task, DriverTask, Vehicle, FuelingInfo
+from .models import CustomUser, Driver, Task, DriverTask, Vehicle, FuelingInfo, RepairReport
 from .forms import loginForm, addDriverForm, addMaintenanceOrFuelingPersonForm, addTaskForm, addVehicleForm, \
-    addFuelingInfoForm
+    addFuelingInfoForm, editMaintenanceForm, reportRepairForm
 
 
 # Create your views here.
@@ -263,3 +264,105 @@ def addFuelingInfo(request):
     else:
         form = addFuelingInfoForm()
     return render(request, 'fueling_templates/add_fueling_page.html', {'form': form})
+
+@login_required(login_url="/login/")
+def reportRepair(request, vehicle_id):
+    if request.user.user_type != CustomUser.MAINTENANCE_PERSON:
+        raise PermissionDenied
+
+    vehicle = Vehicle.objects.get(id=vehicle_id)
+
+    form = None
+    if request.method == 'POST':
+        form = reportRepairForm(request.POST, request.FILES)
+        if form.is_valid():
+            replaced_part_number = form.cleaned_data['replaced_part_number']
+            replaced_part_image = form.cleaned_data['replaced_part_image']
+            total_cost = form.cleaned_data['total_cost']
+
+            RepairReport.objects.create(
+                vehicle_id = vehicle,
+                maintenance_person_id = request.user,
+                total_cost=total_cost,
+                replaced_part_image = replaced_part_image,
+                replaced_part_number=replaced_part_number,
+            )
+            form = reportRepairForm()
+            messages.success(request, "Fueling report added!")
+        else:
+            print('Something went wrong')
+            messages.error(request, 'Form invalid')
+    else:
+        form = reportRepairForm()
+    return render(request, 'maintenance_templates/repair_report.html',
+                  {'form': form,'vehicle':vehicle})
+
+@login_required(login_url="/login/")
+def editMaintenanceInfo(request, vehicle_id):
+    if request.user.user_type != CustomUser.MAINTENANCE_PERSON:
+        raise PermissionDenied
+
+    vehicle = Vehicle.objects.get(id=vehicle_id)
+    if vehicle is None:
+        messages.error(request, 'Such car does not exist!')
+
+    form = None
+    if request.method == 'POST':
+        form = editMaintenanceForm(request.POST)
+        if form.is_valid():
+            mileage = form.cleaned_data['mileage']
+            status = form.cleaned_data['status']
+
+            Vehicle.objects.update(mileage=mileage,
+                                   status=status)
+            form = editMaintenanceForm()
+            return redirect('/vehicle_list_view')
+        else:
+            print('Something went wrong')
+            messages.error(request, 'Form invalid')
+    else:
+        form = editMaintenanceForm(initial={"mileage":vehicle.mileage,
+                                            "status":vehicle.status})
+    return render(request, 'maintenance_templates/edit_maintenance.html',
+                  {'form': form, 'vehicle':vehicle})
+
+@login_required(login_url="/login/")
+def vehicleListView(request):
+    vehicles = Vehicle.objects.all().order_by('id')
+    if request.user.user_type == CustomUser.MY_ADMIN:
+        return render(request, "admin_templates/vehicle_list.html",{'vehicles':vehicles})
+    elif request.user.user_type == CustomUser.MAINTENANCE_PERSON:
+        return render(request, "maintenance_templates/vehicle_list.html", {'vehicles':vehicles})
+    else:
+        return render(request, "fueling_templates/vehicle_list.html", {'vehicles':vehicles})
+@login_required(login_url="/login/")
+def userListView(request):
+    if request.user.user_type != CustomUser.MY_ADMIN:
+        raise PermissionDenied
+    users = CustomUser.objects.exclude(user_type=CustomUser.MY_ADMIN).order_by('id')
+    return render(request, "admin_templates/user_list.html", {'users':users})
+
+@login_required(login_url="/login/")
+def taskListView(request):
+    if request.user.user_type != CustomUser.MY_ADMIN:
+        raise PermissionDenied
+    driver_task_dict = dict()
+    for i in DriverTask.objects.all():
+        driver_task_dict[i.task_id] = i.driver_id
+    return render(request, "admin_templates/task_list.html",
+                  {'driver_task_dict':driver_task_dict})
+
+class VehicleDeleteView(DeleteView):
+    model = Vehicle
+    success_url = "/vehicle_list_view"
+    template_name = "vehicle_delete.html"
+
+class UserDeleteView(DeleteView):
+    model = CustomUser
+    success_url = "/user_list_view"
+    template_name = "admin_templates/user_delete.html"
+
+class TaskDeleteView(DeleteView):
+    model = Task
+    success_url = "/task_list_view"
+    template_name = "admin_templates/task_delete.html"

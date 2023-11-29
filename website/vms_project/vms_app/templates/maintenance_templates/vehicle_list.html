@@ -1,0 +1,29 @@
+{% extends "maintenance_templates/home.html" %}
+
+{% block mainbody %}
+<h1>Vehicles</h1>
+<table style="border: 1px solid">
+    <tr>
+        <th style="border: 1px solid; text-align: left; padding: 8px;">ID</th>
+        <th style="border: 1px solid; text-align: left; padding: 8px;">License plate</th>
+        <th style="border: 1px solid; text-align: left; padding: 8px;">Type</th>
+        <th style="border: 1px solid; text-align: left; padding: 8px;">Make</th>
+        <th style="border: 1px solid; text-align: left; padding: 8px;">Mileage</th>
+        <th style="border: 1px solid; text-align: left; padding: 8px;">Status</th>
+        <th style="border: 1px solid; text-align: left; padding: 8px;"></th>
+        <th style="border: 1px solid; text-align: left; padding: 8px;"></th>
+    </tr>
+{% for vehicle in vehicles %}
+    <tr>
+        <td style="border: 1px solid; text-align: left; padding: 8px;">{{vehicle.id}}</td>
+        <td style="border: 1px solid; text-align: left; padding: 8px;">{{vehicle.license_plate}}</td>
+        <td style="border: 1px solid; text-align: left; padding: 8px;">{{vehicle.type}}</td>
+        <td style="border: 1px solid; text-align: left; padding: 8px;">{{vehicle.make}}</td>
+        <td style="border: 1px solid; text-align: left; padding: 8px;">{{vehicle.mileage}}</td>
+        <td style="border: 1px solid; text-align: left; padding: 8px;">{{vehicle.status}}</td>
+        <td style="border: 1px solid; text-align: left; padding: 8px;"><a href="/edit_maintenance_info/{{vehicle.id}}"><span class="glyphicon glyphicon-edit"></span>Edit</a></td>
+         <td style="border: 1px solid; text-align: left; padding: 8px;"><a href="/repair_report/{{vehicle.id}}"><span class="glyphicon glyphicon-wrench"></span>Repair</a></td>
+    </tr>
+{% endfor %}
+</table>
+{% endblock %}

@@ -88,4 +88,14 @@ class FuelingInfo(models.Model):
     image_after_fueling = models.ImageField(upload_to="fueling/")
     objects = models.Manager()
 
+class RepairReport(models.Model):
+    id = models.AutoField(primary_key=True)
+    vehicle_id = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
+    maintenance_person_id = models.ForeignKey(MaintenancePerson, on_delete=models.CASCADE)
+    replaced_part_number = models.IntegerField()
+    replaced_part_image = models.ImageField(upload_to="maintenance/")
+    total_cost = models.FloatField()
+    date = models.DateTimeField(default=timezone.now)
+    objects = models.Manager()
+
 
