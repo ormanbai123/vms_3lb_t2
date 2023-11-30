@@ -40,8 +40,9 @@ def finishTask(request):
         serializer = TaskSerializer(data=data)
         if serializer.is_valid():
             task = serializer.validated_data['Task']
-            task.update(status=serializer.validated_data['task_status'])
-            return Response(status=status.HTTP_200_OK)
+            task.status = serializer.validated_data['task_status']
+            task.save()
+            return Response("Good!",status=status.HTTP_200_OK)
         else:
             return Response({'status': 'fail',
                              'data': serializer.error_messages}, status=status.HTTP_400_BAD_REQUEST)
