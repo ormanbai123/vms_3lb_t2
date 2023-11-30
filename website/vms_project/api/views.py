@@ -33,6 +33,7 @@ def driverLogout(request):
     return HttpResponse("Logged out!")
 
 @api_view(['POST'])
+@csrf_exempt
 def finishTask(request):
     if request.method == 'POST':
         data = JSONParser().parse(request)

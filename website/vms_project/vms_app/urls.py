@@ -21,9 +21,11 @@ urlpatterns = [
     path("add_vehicle/", views.addVehicle, name='vms-add-vehicle'),
 
     path("add_fueling_info/", views.addFuelingInfo, name='vms-add-fueling-info'),
+    path('fueling_info/', views.fuelingInfoView, name='vms-fueling-info'),
 
-    path("edit_maintenance_info/<id>", views.editMaintenanceInfo, name='vms-edit-maintenance'),
-    path("repair_report/<id>", views.reportRepair, name='vms-report-repair'),
+    path("edit_maintenance_info/<vehicle_id>", views.editMaintenanceInfo, name='vms-edit-maintenance'),
+    path("repair_report/<vehicle_id>", views.reportRepair, name='vms-report-repair'),
+    path("repair_report_view/",views.repairReportView,name='vms-report-repair-view'),
 
     path("generic_Home/", views.genericHome, name='vms-generic-home'),
     path("vehicle_list_view", views.vehicleListView, name='vms-vehicle-list-view'),

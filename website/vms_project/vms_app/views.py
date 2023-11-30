@@ -8,7 +8,8 @@ from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.views.generic import DeleteView
 
-from .models import CustomUser, Driver, Task, DriverTask, Vehicle, FuelingInfo, RepairReport
+from .models import CustomUser, Driver, Task, DriverTask, Vehicle, FuelingInfo, RepairReport, FuelingPerson, \
+    MaintenancePerson
 from .forms import loginForm, addDriverForm, addMaintenanceOrFuelingPersonForm, addTaskForm, addVehicleForm, \
     addFuelingInfoForm, editMaintenanceForm, reportRepairForm
 
@@ -184,9 +185,12 @@ def addMaintenanceOrFuelingPerson(request):
                 user.last_name = last_name
                 if user_type == 'Maintenance Person':
                     user.user_type = CustomUser.MAINTENANCE_PERSON
+                    user.save()
+                    MaintenancePerson.objects.create(profile=user)
                 else:
                     user.user_type = CustomUser.FUELING_PERSON
-                user.save()
+                    user.save()
+                    FuelingPerson.objects.create(profile=user)
                 form = addMaintenanceOrFuelingPersonForm()
                 messages.success(request, 'User created successfully')
         else:
@@ -248,7 +252,7 @@ def addFuelingInfo(request):
             else:
                 FuelingInfo.objects.create(
                     vehicle_id = vehicle,
-                    fueling_person_id = request.user,
+                    fueling_person_id = FuelingPerson.objects.get(profile=request.user),
                     date = date,
                     gas_station_name = gas_station_name,
                     fuel_amount = fuel_amount,
@@ -282,7 +286,7 @@ def reportRepair(request, vehicle_id):
 
             RepairReport.objects.create(
                 vehicle_id = vehicle,
-                maintenance_person_id = request.user,
+                maintenance_person_id = MaintenancePerson.objects.get(profile=request.user),
                 total_cost=total_cost,
                 replaced_part_image = replaced_part_image,
                 replaced_part_number=replaced_part_number,
@@ -351,6 +355,24 @@ def taskListView(request):
         driver_task_dict[i.task_id] = i.driver_id
     return render(request, "admin_templates/task_list.html",
                   {'driver_task_dict':driver_task_dict})
+
+@login_required(login_url="/login/")
+def fuelingInfoView(request):
+    if request.user.user_type != CustomUser.FUELING_PERSON:
+        raise PermissionDenied
+    fueling_person = FuelingPerson.objects.get(profile=request.user)
+    fueling_infos = FuelingInfo.objects.filter(fueling_person_id=fueling_person).all()
+    return render(request, "fueling_templates/fueling_info.html",
+                  {'infos':fueling_infos})
+
+@login_required(login_url="/login/")
+def repairReportView(request):
+    if request.user.user_type != CustomUser.MAINTENANCE_PERSON:
+        raise PermissionDenied
+    maintenance_person = MaintenancePerson.objects.get(profile=request.user)
+    reports = RepairReport.objects.filter(maintenance_person_id=maintenance_person).all()
+    return render(request, "maintenance_templates/repair_reports.html",
+                  {'reports':reports})
 
 class VehicleDeleteView(DeleteView):
     model = Vehicle

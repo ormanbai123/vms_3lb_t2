@@ -70,8 +70,8 @@ function Body() {
         return (
           <View style={MapStyles.container}>
               <MapView style={MapStyles.map} initialRegion={{
-                latitude : currentLatitude,
-                longitude : currentLongitude,
+                latitude : 51.090108,
+                longitude : 71.399909,
                 latitudeDelta : latitudeDelta,
                 longitudeDelta : longitudeDelta,
               }}
@@ -122,24 +122,24 @@ function Body() {
                     setDriverActive(false);
 
                     //------------------Production code-----------------------
-                    // var serverURL = "http://10.0.2.2:8000/api/finish_task/";
-                    // try{
-                    //     const response = await fetch(serverURL, {
-                    //       method: 'POST',
-                    //       headers: {
-                    //       "Content-Type": "application/json",
-                    //       },
-                    //       body: JSON.stringify({
-                    //         'task_id': currentTask.id,
-                    //         'task_status': "completed",
-                    //       }),
-                    //     });
-                    //     const result = await response.json();
-                    //     console.log("Success:", result);
+                    var serverURL = "http://10.0.2.2:8000/api/finish_task/";
+                    try{
+                        const response = await fetch(serverURL, {
+                          method: 'POST',
+                          headers: {
+                          "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify({
+                            'task_id': currentTask.id,
+                            'task_status': "completed",
+                          }),
+                        });
+                        const result = await response.json();
+                        console.log("Success:", result);
                         
-                    //   }catch (error){
-                    //     console.error("Error:", error);
-                    //   }
+                      }catch (error){
+                        console.error("Error:", error);
+                      }
                     //---------------------------------------------------------
 
                     currentTask = {}; // reset current task
@@ -272,21 +272,21 @@ function Body() {
       
             <Button title="Log out" onPress={
               //---------------------Production code--------------------
-              // async ()=>{
-              //   const serverURL = "http://10.0.2.2:8000/api/logout/";
-              //   try{
-              //     const response = await fetch(serverURL);
-              //     navigation.navigate('LoginScreen');
-              //   } catch(error){
-              //     console.error(error);
-              //   }
-              // }
+              async ()=>{
+                const serverURL = "http://10.0.2.2:8000/api/logout/";
+                try{
+                  const response = await fetch(serverURL);
+                  navigation.navigate('LoginScreen');
+                } catch(error){
+                  console.error(error);
+                }
+              }
               //-----------------------------------------------------
       
               // Debug code---------------
-              ()=>{
-                navigation.navigate('LoginScreen');
-              }
+              // ()=>{
+              //   navigation.navigate('LoginScreen');
+              // }
               // -------------------------------
             }>
             </Button>
@@ -322,43 +322,43 @@ const LoginScreen = ({ navigation }) => {
 
 
     //-------------------Production---------------------------------
-    // try{
-    //   const response = await fetch(serverURL, {
-    //     method: 'POST',
-    //     headers: {
-    //     "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({
-    //       'username': username,
-    //       'password': password,
-    //     }),
-    //   });
-    //   const responseMsg = await response.json();
-    //   if (responseMsg.status === "success") {
-    //     userInfo.username = username;
-    //     userInfo.password = password;
-    //     userInfo.email = responseMsg.data.email;
-    //     userInfo.first_name = responseMsg.data.first_name;
-    //     userInfo.last_name = responseMsg.data.last_name;
-    //     userInfo.government_id = responseMsg.data.government_id;
-    //     userInfo.driving_license_code = responseMsg.data.driving_license_code;
-    //     userInfo.phone_number = responseMsg.data.phone_number;
+    try{
+      const response = await fetch(serverURL, {
+        method: 'POST',
+        headers: {
+        "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          'username': username,
+          'password': password,
+        }),
+      });
+      const responseMsg = await response.json();
+      if (responseMsg.status === "success") {
+        userInfo.username = username;
+        userInfo.password = password;
+        userInfo.email = responseMsg.data.email;
+        userInfo.first_name = responseMsg.data.first_name;
+        userInfo.last_name = responseMsg.data.last_name;
+        userInfo.government_id = responseMsg.data.government_id;
+        userInfo.driving_license_code = responseMsg.data.driving_license_code;
+        userInfo.phone_number = responseMsg.data.phone_number;
         
-    //     userTasks = responseMsg.data.tasks;
+        userTasks = responseMsg.data.tasks;
 
-    //     navigation.navigate("Body");
-    //   } else {
-    //     console.error("API post request fail!");
-    //   }
+        navigation.navigate("Body");
+      } else {
+        console.error("API post request fail!");
+      }
       
-    // }catch (error){
-    //   console.error(error);
-    // }
+    }catch (error){
+      console.error(error);
+    }
     //-------------------------------------------------------------------
 
 
       //--------------When testing-------------------------
-      navigation.navigate("Body")
+      // navigation.navigate("Body")
       //---------------------------------------------------
     };
 

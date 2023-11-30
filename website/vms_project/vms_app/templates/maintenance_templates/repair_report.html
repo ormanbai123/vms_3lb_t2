@@ -2,7 +2,7 @@
 
 {% block mainbody %}
 <h1>Report Repair</h1>
-<form method="post">
+<form method="post" enctype="multipart/form-data">
 {% csrf_token %}
   <label for="license_plate">License plate</label><br>
   <input type="text" class="form-control" id="license_plate" name="license_plate" value={{vehicle.license_plate}} readonly><br>
