@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
 
-from .serializers import CustomUserSerializer, DriverSerializer, TaskSerializer
+from .serializers import CustomUserSerializer, TaskSerializer
 
 from django.views.decorators.csrf import csrf_exempt
 
@@ -33,6 +33,7 @@ def driverLogout(request):
     return HttpResponse("Logged out!")
 
 @api_view(['POST'])
+@csrf_exempt
 def finishTask(request):
     if request.method == 'POST':
         data = JSONParser().parse(request)

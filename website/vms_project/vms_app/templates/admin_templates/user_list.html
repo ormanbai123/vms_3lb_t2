@@ -1,0 +1,37 @@
+{% extends "admin_templates/home.html" %}
+
+{% block mainbody %}
+<h1>Users</h1>
+<table style="border: 1px solid">
+    <tr>
+        <th style="border: 1px solid; text-align: left; padding: 8px;">ID</th>
+        <th style="border: 1px solid; text-align: left; padding: 8px;">Username</th>
+        <th style="border: 1px solid; text-align: left; padding: 8px;">First name</th>
+        <th style="border: 1px solid; text-align: left; padding: 8px;">Last name</th>
+        <th style="border: 1px solid; text-align: left; padding: 8px;">User type</th>
+        <th style="border: 1px solid; text-align: left; padding: 8px;">Email</th>
+        <th style="border: 1px solid; text-align: left; padding: 8px;"></th>
+        <th style="border: 1px solid; text-align: left; padding: 8px;"></th>
+    </tr>
+{% for user in users %}
+    <tr>
+        <td style="border: 1px solid; text-align: left; padding: 8px;">{{user.id}}</td>
+        <td style="border: 1px solid; text-align: left; padding: 8px;">{{user.username}}</td>
+        <td style="border: 1px solid; text-align: left; padding: 8px;">{{user.first_name}}</td>
+        <td style="border: 1px solid; text-align: left; padding: 8px;">{{user.last_name}}</td>
+        <td style="border: 1px solid; text-align: left; padding: 8px;">
+            {% if user.user_type == "2"  %}
+            Driver
+            {% elif user.user_type == "3" %}
+            Maintenance
+            {% else %}
+            Fueling
+            {% endif %}
+        </td>
+        <td style="border: 1px solid; text-align: left; padding: 8px;">{{user.email}}</td>
+        <td style="border: 1px solid; text-align: left; padding: 8px;"><a href="#"><span class="glyphicon glyphicon-edit"></span>Edit</a></td>
+        <td style="border: 1px solid; text-align: left; padding: 8px;"><a href="/user/delete/{{user.id}}/"><span class="glyphicon glyphicon-trash"></span>Delete</a></td>
+    </tr>
+{% endfor %}
+</table>
+{% endblock %}

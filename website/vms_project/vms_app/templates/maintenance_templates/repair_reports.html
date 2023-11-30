@@ -1,0 +1,25 @@
+{% extends "maintenance_templates/home.html" %}
+
+{% block mainbody %}
+<h1>Vehicles</h1>
+<table style="border: 1px solid">
+    <tr>
+        <th style="border: 1px solid; text-align: left; padding: 8px;">ID</th>
+        <th style="border: 1px solid; text-align: left; padding: 8px;">License plate of vehicle</th>
+        <th style="border: 1px solid; text-align: left; padding: 8px;">Replaced part No</th>
+        <th style="border: 1px solid; text-align: left; padding: 8px;">Total cost</th>
+        <th style="border: 1px solid; text-align: left; padding: 8px;">Date</th>
+        <th style="border: 1px solid; text-align: left; padding: 8px;">Replace part Image</th>
+    </tr>
+{% for report in reports %}
+    <tr>
+        <td style="border: 1px solid; text-align: left; padding: 8px;">{{report.id}}</td>
+        <td style="border: 1px solid; text-align: left; padding: 8px;">{{report.vehicle_id.license_plate}}</td>
+        <td style="border: 1px solid; text-align: left; padding: 8px;">{{report.replaced_part_number}}</td>
+        <td style="border: 1px solid; text-align: left; padding: 8px;">{{report.total_cost}}</td>
+        <td style="border: 1px solid; text-align: left; padding: 8px;">{{report.date}}</td>
+        <td style="border: 1px solid; text-align: left; padding: 8px;"><img src="{{report.replaced_part_image.url}}" alt="img"  height="100px" width="100px"></td>
+    </tr>
+{% endfor %}
+</table>
+{% endblock %}

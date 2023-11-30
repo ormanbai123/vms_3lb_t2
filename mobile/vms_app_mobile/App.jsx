@@ -63,64 +63,29 @@ function Body() {
     const [taskList, setTaskList] = useState(userTasks);
     const [completedTaskList, setCompletedTaskList] = useState(userCompletedTasks);
     const [currentDest, setCurrentDest] = useState({});
+    const [currentSource, setCurrentSource] = useState({});
+    const mapRef = useRef();
 
     function HomeScreen({ navigation }) {
-        const [currentLatitude, setCurrentLatitude] = useState(51.090108);
-        const [currentLongitude, setCurrentLongitude] = useState(71.399909);
-        const mapRef = useRef();
-
-        useEffect(() => {
-          Geolocation.getCurrentPosition(
-            (position)=>{
-                setCurrentLatitude(position.coords.latitude);
-                setCurrentLongitude(position.coords.longitude);
-                console.log(currentLatitude, currentLongitude);
-            },
-            (error)=>{
-              console.error(error.message);
-              return;
-            },
-            { enableHighAccuracy: true, timeout: 20000, maximumAge: 10000 }
-          );
-
-          // Set up location updates
-          const watchId = Geolocation.watchPosition(
-            (position) => {
-              const { latitude, longitude } = position.coords;
-              setCurrentLatitude(latitude);
-              setCurrentLongitude(longitude);
-            },
-            (error) => console.error(error),
-            { enableHighAccuracy: true, timeout: 20000, maximumAge: 10000, distanceFilter: 10 }
-          );
-
-          return () => {
-            // Clear watch when the component unmounts
-            Geolocation.clearWatch(watchId);
-          };
-        }, []);
-
         return (
           <View style={MapStyles.container}>
               <MapView style={MapStyles.map} initialRegion={{
-                latitude : currentLatitude,
-                longitude : currentLongitude,
+                latitude : 51.090108,
+                longitude : 71.399909,
                 latitudeDelta : latitudeDelta,
                 longitudeDelta : longitudeDelta,
               }}
                provider={PROVIDER_GOOGLE}
                ref={mapRef}
-               region={
-                {
-                  latitude:currentLatitude,
-                  longitude:currentLongitude,
-                  longitudeDelta: longitudeDelta,
-                  latitudeDelta:latitudeDelta
-                }
-               }
+               showsUserLocation={true}
+               onUserLocationChange={location=>{mapRef.current.animateToRegion({
+                  latitude:location.nativeEvent.coordinate.latitude,
+                  longitude: location.nativeEvent.coordinate.longitude,
+                  latitudeDelta: latitudeDelta,
+                  longitudeDelta: longitudeDelta
+                  });
+                } }
                >
-                <Marker coordinate={{latitude:currentLatitude, longitude:currentLongitude}}>
-                </Marker>
 
                 { driverActive  && 
                 <Marker coordinate={{latitude:currentDest.lat, longitude:currentDest.lng}}>
@@ -128,8 +93,13 @@ function Body() {
                 }
 
                 { driverActive  && 
+                <Marker coordinate={{latitude:currentSource.lat, longitude:currentSource.lng}}>
+                </Marker>
+                }
+
+                { driverActive  && 
                 <MapViewDirections
-                 origin={{latitude:currentLatitude, longitude:currentLongitude}}
+                 origin={{latitude:currentSource.lat, longitude:currentSource.lng}}
                  destination={{latitude:currentDest.lat, longitude:currentDest.lng}}
                  apikey='AIzaSyBvAYRE_P_EDKwm6bx92F0mKh49LYfr2X0'
                  strokeWidth={4}
@@ -152,24 +122,24 @@ function Body() {
                     setDriverActive(false);
 
                     //------------------Production code-----------------------
-                    // var serverURL = "http://10.0.2.2:8000/api/finish_task/";
-                    // try{
-                    //     const response = await fetch(serverURL, {
-                    //       method: 'POST',
-                    //       headers: {
-                    //       "Content-Type": "application/json",
-                    //       },
-                    //       body: JSON.stringify({
-                    //         'task_id': currentTask.id,
-                    //         'task_status': "completed",
-                    //       }),
-                    //     });
-                    //     const result = await response.json();
-                    //     console.log("Success:", result);
+                    var serverURL = "http://10.0.2.2:8000/api/finish_task/";
+                    try{
+                        const response = await fetch(serverURL, {
+                          method: 'POST',
+                          headers: {
+                          "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify({
+                            'task_id': currentTask.id,
+                            'task_status': "completed",
+                          }),
+                        });
+                        const result = await response.json();
+                        console.log("Success:", result);
                         
-                    //   }catch (error){
-                    //     console.error("Error:", error);
-                    //   }
+                      }catch (error){
+                        console.error("Error:", error);
+                      }
                     //---------------------------------------------------------
 
                     currentTask = {}; // reset current task
@@ -212,6 +182,7 @@ function Body() {
           setTaskList(updatedTaskList);
           setDriverActive(true);
           setCurrentDest(Task.destLatLng);
+          setCurrentSource(Task.sourceLatLng);
           currentTask = {id : Task.id,
                         sourceName : Task.sourceName,
                         destName : Task.destName,
@@ -301,21 +272,21 @@ function Body() {
       
             <Button title="Log out" onPress={
               //---------------------Production code--------------------
-              // async ()=>{
-              //   const serverURL = "http://10.0.2.2:8000/api/logout/";
-              //   try{
-              //     const response = await fetch(serverURL);
-              //     navigation.navigate('LoginScreen');
-              //   } catch(error){
-              //     console.error(error);
-              //   }
-              // }
+              async ()=>{
+                const serverURL = "http://10.0.2.2:8000/api/logout/";
+                try{
+                  const response = await fetch(serverURL);
+                  navigation.navigate('LoginScreen');
+                } catch(error){
+                  console.error(error);
+                }
+              }
               //-----------------------------------------------------
       
               // Debug code---------------
-              ()=>{
-                navigation.navigate('LoginScreen');
-              }
+              // ()=>{
+              //   navigation.navigate('LoginScreen');
+              // }
               // -------------------------------
             }>
             </Button>
@@ -351,43 +322,43 @@ const LoginScreen = ({ navigation }) => {
 
 
     //-------------------Production---------------------------------
-    // try{
-    //   const response = await fetch(serverURL, {
-    //     method: 'POST',
-    //     headers: {
-    //     "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({
-    //       'username': username,
-    //       'password': password,
-    //     }),
-    //   });
-    //   const responseMsg = await response.json();
-    //   if (responseMsg.status === "success") {
-    //     userInfo.username = username;
-    //     userInfo.password = password;
-    //     userInfo.email = responseMsg.data.email;
-    //     userInfo.first_name = responseMsg.data.first_name;
-    //     userInfo.last_name = responseMsg.data.last_name;
-    //     userInfo.government_id = responseMsg.data.government_id;
-    //     userInfo.driving_license_code = responseMsg.data.driving_license_code;
-    //     userInfo.phone_number = responseMsg.data.phone_number;
+    try{
+      const response = await fetch(serverURL, {
+        method: 'POST',
+        headers: {
+        "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          'username': username,
+          'password': password,
+        }),
+      });
+      const responseMsg = await response.json();
+      if (responseMsg.status === "success") {
+        userInfo.username = username;
+        userInfo.password = password;
+        userInfo.email = responseMsg.data.email;
+        userInfo.first_name = responseMsg.data.first_name;
+        userInfo.last_name = responseMsg.data.last_name;
+        userInfo.government_id = responseMsg.data.government_id;
+        userInfo.driving_license_code = responseMsg.data.driving_license_code;
+        userInfo.phone_number = responseMsg.data.phone_number;
         
-    //     userTasks = responseMsg.data.tasks;
+        userTasks = responseMsg.data.tasks;
 
-    //     navigation.navigate("Body");
-    //   } else {
-    //     console.error("API post request fail!");
-    //   }
+        navigation.navigate("Body");
+      } else {
+        console.error("API post request fail!");
+      }
       
-    // }catch (error){
-    //   console.error(error);
-    // }
+    }catch (error){
+      console.error(error);
+    }
     //-------------------------------------------------------------------
 
 
       //--------------When testing-------------------------
-      navigation.navigate("Body")
+      // navigation.navigate("Body")
       //---------------------------------------------------
     };
 

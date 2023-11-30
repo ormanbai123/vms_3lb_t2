@@ -1,0 +1,20 @@
+{% extends "maintenance_templates/home.html" %}
+
+{% block mainbody %}
+<h1>Edit Vehicle Info</h1>
+<form method="post">
+{% csrf_token %}
+  <label for="license_plate">License plate</label><br>
+  <input type="text" class="form-control" id="license_plate" name="license_plate" value={{vehicle.license_plate}} readonly><br>
+  {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Edit</button>
+
+    {% if messages %}
+  <ul class = "messages">
+    {% for message in messages %}
+      <li> {{message}} </li>
+    {% endfor %}
+  </ul>
+  {% endif%}
+</form>
+{% endblock %}
